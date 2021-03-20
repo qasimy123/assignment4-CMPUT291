@@ -44,23 +44,26 @@ DROP_INDEX_QUERY = '''
 '''
 country_list = None
 
+
 def main():
-    options = {"100":V100_DB_PATH,"1000": V1K_DB_PATH, "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
-    
+    options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
+               "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
+
     print("Avg times and sizes for Query 4 without index\n")
     run_trials(options)
-    
+
     print("Creating index for each database")
 
     update_index(options, CREATE_INDEX_QUERY)
-    
+
     print("Avg times and sizes for Query 4 with index\n")
     run_trials(options)
-    
+
     print("Dropping index for each database\n")
 
     update_index(options, DROP_INDEX_QUERY)
     print("Done!")
+
 
 def update_index(options, query):
     for option in options:
@@ -71,15 +74,13 @@ def update_index(options, query):
         connection.commit()
         connection.close()
 
+
 def run_trials(options):
     for option in options:
         print("Avg time for {} entries".format(option))
         avg_time(options[option])
         print("Size of database {}".format(os.stat(options[option]).st_size))
         print("\n")
-
-    
-
 
 
 def connect(path) -> Connection:
@@ -104,8 +105,8 @@ def run_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
     country_code = get_random_country_code()
-    cursor.execute(QUERY_4,{
-                "countrycode": country_code})
+    cursor.execute(QUERY_4, {
+        "countrycode": country_code})
     connection.commit()
     connection.close()
 
@@ -133,9 +134,10 @@ def get_random_country_code() -> str:
     country_code = country_code_list[rand_country_i][1]
     return country_code
 
+
 def avg_time(path) -> None:
     total_time = 0
-    for i in range(0,100):
+    for i in range(0, 100):
         t_start = time.process_time()
         run_query(path)
         t_taken = time.process_time() - t_start
