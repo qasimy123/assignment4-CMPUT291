@@ -57,14 +57,14 @@ def load_data(path: str) -> List[str]:
     return data[1:]
 
 
-def is_valid_row(added, row, path)-> bool:
+def is_valid_row(added, row, path) -> bool:
     if path is UPC_DATA:
         return is_valid_upc(added, row)
     else:
         return row[0] not in added
 
 
-def is_valid_upc(added, row)->bool:
+def is_valid_upc(added, row) -> bool:
     return row[0] != 'null' and row[0] != '' and row[0] not in added and row[0].isdigit() and int(row[0]) <= 2**63-1
 
 
@@ -74,6 +74,7 @@ def main() -> None:
     make_main()
     populate(country_data, upc_data)
     make_copies()
+
 
 def make_main() -> None:
     create_table_query = '''
@@ -91,6 +92,7 @@ def make_main() -> None:
     '''
     connection = connect()
     connection.cursor().execute(create_table_query)
+
 
 def make_copies() -> None:
     query = '''
@@ -118,11 +120,13 @@ def make_copies() -> None:
         Parts
     limit :amount;
     '''
-    paths = [V100_DB_PATH, V1K_DB_PATH, V10K_DB_PATH, V100K_DB_PATH, V1M_DB_PATH]
+    paths = [V100_DB_PATH, V1K_DB_PATH,
+             V10K_DB_PATH, V100K_DB_PATH, V1M_DB_PATH]
     amounts = [100, 1000, 10000, 100000, 1000000]
-    for i in range(0,5):
+    for i in range(0, 5):
         connection = connect()
-        connection.execute(query,{"file_name": exact_path(paths[i])}).execute(query1).execute(query2,{"amount": amounts[i]})
+        connection.execute(query, {"file_name": exact_path(paths[i])}).execute(
+            query1).execute(query2, {"amount": amounts[i]})
         connection.commit()
         connection.close()
 
@@ -148,9 +152,9 @@ def populate(country_data, upc_data) -> None:
         needs_part = upc_data[needs_part_i][0]
 
         insertions.append({
-            "partNumber": part_number, 
-            "partPrice": part_price, 
-            "needsPart": needs_part, 
+            "partNumber": part_number,
+            "partPrice": part_price,
+            "needsPart": needs_part,
             "madeIn": country_code
         })
     connection.executemany(query, insertions)
