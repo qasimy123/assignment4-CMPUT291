@@ -56,9 +56,9 @@ country_list = None
 
 
 def main():
-    # options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
-    #            "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
-    options = { "100": V100_DB_PATH, "1000": V1K_DB_PATH }
+    options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
+               "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
+
     print("Avg times and sizes for Query 5 without index\n")
     # run_trials(options, QUERY_5)
 
