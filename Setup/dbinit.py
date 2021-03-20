@@ -57,14 +57,14 @@ def load_data(path: str) -> List[str]:
     return data[1:]
 
 
-def is_valid_row(added, row, path):
+def is_valid_row(added, row, path)-> bool:
     if path is UPC_DATA:
         return is_valid_upc(added, row)
     else:
         return row[0] not in added
 
 
-def is_valid_upc(added, row):
+def is_valid_upc(added, row)->bool:
     return row[0] != 'null' and row[0] != '' and row[0] not in added and row[0].isdigit() and int(row[0]) <= 2**63-1
 
 
