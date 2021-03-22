@@ -17,7 +17,7 @@ QUERY_3 = '''
         from
             Parts
         group by
-            madeIn
+            madeIn;
     '''
 
 CREATE_INDEX_QUERY = '''
