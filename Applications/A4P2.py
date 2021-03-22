@@ -8,8 +8,6 @@ V1K_DB_PATH = "../SQLiteDBs/A4v1k.db"
 V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
 V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
-MAIN_DB_PATH = "../SQLiteDBs/main.db"
-
 
 QUERY_3 = '''
         select
@@ -30,9 +28,10 @@ DROP_INDEX_QUERY = '''
 
 DROP_INDEX_QUERY_IF_EXISTS = '''
          DROP INDEX IF EXISTS idxMadeIn;
-    '''  
+    '''
 
 Connection = sqlite3.Connection
+
 
 def connect(path) -> Connection:
 
@@ -56,13 +55,13 @@ def main():
 
     print("Creating index for each database\n")
     update_index(options, CREATE_INDEX_QUERY)
-    
+
     print("Avg times and sizes for Query 1 with index\n")
     run_trials(options)
 
     print("Dropping index for each database\n")
     update_index(options, DROP_INDEX_QUERY)
-    
+
     print("Done!")
 
 
@@ -75,12 +74,14 @@ def update_index(options, query):
         connection.commit()
         connection.close()
 
+
 def run_trials(options):
     for option in options:
         print("Avg time for {} entries".format(option))
         avg_time(options[option])
         print("Size of database {}".format(os.stat(options[option]).st_size))
-        print("\n") 
+        print("\n")
+
 
 def avg_time(path) -> None:
     total_time = 0
@@ -91,6 +92,7 @@ def avg_time(path) -> None:
         total_time += t_taken
     print("Avg time: {}".format(total_time/100))
 
+
 def run_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
@@ -99,9 +101,5 @@ def run_query(path) -> None:
     connection.close()
 
 
-
-
-        
-    
 if __name__ == "__main__":
     main()

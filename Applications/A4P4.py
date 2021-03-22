@@ -20,14 +20,20 @@ QUERY_5 = '''
     from
         Parts p
     where
-        not exists (
+        exists (
             select
-                *
+                1
             from
                 Parts p2
             where
-                p.partNumber = p2.needsPart
-        );
+                p.partNumber = p2.partNumber
+                and p2.partNumber not in (
+                    select
+                        needsPart
+                    from
+                        Parts p2
+                )
+    );
     '''
 
 # Q6: Find the quantity of parts that are not used in any other part, your query must use NOT IN.
@@ -44,9 +50,9 @@ QUERY_6 = '''
                 Parts p2
         );
     '''
-# Creates a covering index that sqlite will use to efficiently find madeIn and their part price
+# Creates a covering index that sqlite will use to efficiently find  partNumber and needsPart
 CREATE_INDEX_QUERY = '''
-    CREATE INDEX idxPartNumberNeedsPart on Parts ( partNumber, needsPart );
+    CREATE INDEX idxPartNumberNeedsPart on Parts ( needsPart, partNumber );
 '''
 
 DROP_INDEX_QUERY = '''
@@ -60,7 +66,7 @@ def main():
                "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
 
     print("Avg times and sizes for Query 5 without index\n")
-    # run_trials(options, QUERY_5)
+    run_trials(options, QUERY_5)
 
     print("Avg times and sizes for Query 6 without index\n")
     run_trials(options, QUERY_6)

@@ -10,7 +10,6 @@ V1K_DB_PATH = "../SQLiteDBs/A4v1k.db"
 V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
 V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
-MAIN_DB_PATH = "../SQLiteDBs/main.db"
 
 
 QUERY_1 = '''
@@ -43,12 +42,13 @@ DROP_INDEX_QUERY_IF_EXISTS = '''
          DROP INDEX IF EXISTS idxNeedsPart;
     '''
 
-#setting globals to use list in memory
+# setting globals to use list in memory
 part_number_list = None
 needs_part_list = None
 
 
 Connection = sqlite3.Connection
+
 
 def connect(path) -> Connection:
     # Returns a connection to the database provided at the path.
@@ -66,7 +66,7 @@ def main():
     options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
                "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
 
-    #Drop index if it exists
+    # Drop index if it exists
     update_index(options, DROP_INDEX_QUERY_IF_EXISTS)
 
     print("Avg times and sizes for Query 1 without index\n")
@@ -97,15 +97,15 @@ def update_index(options, query):
         cursor = connection.cursor()
         cursor.execute(query)
         connection.commit()
-        connection.close() 
+        connection.close()
 
 
-def get_PartNumber():
+def get_PartNumber(path):
 
     global part_number_list
 
     if part_number_list is None:
-        connection = connect(MAIN_DB_PATH)
+        connection = connect(path)
         cursor = connection.cursor()
 
         cursor.execute(
@@ -121,16 +121,17 @@ def get_PartNumber():
 
         connection.commit()
         connection.close()
-        
+
     part_number = random.choice(part_number_list)
     return part_number
 
-def get_NeedsPart():
+
+def get_NeedsPart(path):
 
     global needs_part_list
 
     if needs_part_list is None:
-        connection = connect(MAIN_DB_PATH)
+        connection = connect(path)
 
         cursor = connection.cursor()
         cursor.execute(
@@ -149,11 +150,12 @@ def get_NeedsPart():
     needs_part_number = random.choice(needs_part_list)
     return needs_part_number
 
-def get_price_of_PartNumber(part_num):
 
-    connection = connect(MAIN_DB_PATH)
+def get_price_of_PartNumber(part_num, path):
+
+    connection = connect(path)
     cursor = connection.cursor()
-    #Finding price of part given its part number
+    # Finding price of part given its part number
     cursor.execute(
         '''
         select
@@ -162,19 +164,19 @@ def get_price_of_PartNumber(part_num):
             Parts
         where
             partNumber = :num;
-        ''',{
-            "num":part_num
+        ''', {
+            "num": part_num
         }
     )
     connection.commit()
     connection.close()
 
 
-def get_price_of_NeedsPart(needs_part_num):
+def get_price_of_NeedsPart(needs_part_num, path):
 
-    connection = connect(MAIN_DB_PATH)
+    connection = connect(path)
     cursor = connection.cursor()
-    #Finding price of part given the part required
+    # Finding price of part given the part required
     cursor.execute(
         '''
         select
@@ -183,32 +185,35 @@ def get_price_of_NeedsPart(needs_part_num):
             Parts
         where
             needsPart = :num;
-        ''',{
-            "num":needs_part_num
+        ''', {
+            "num": needs_part_num
         }
     )
     connection.commit()
     connection.close()
-    
+
+
 def run_PartNumber_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
-    part_number = get_PartNumber()
-    part_number_price = get_price_of_PartNumber(part_number)
+    part_number = get_PartNumber(path)
+    part_number_price = get_price_of_PartNumber(part_number, path)
     cursor.execute(QUERY_1, {
         "num": part_number_price})
     connection.commit()
     connection.close()
 
+
 def run_NeedPart_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
-    needs_part = get_NeedsPart()
-    needs_part_price = get_price_of_NeedsPart(needs_part)
+    needs_part = get_NeedsPart(path)
+    needs_part_price = get_price_of_NeedsPart(needs_part, path)
     cursor.execute(QUERY_2, {
         "num": needs_part_price})
     connection.commit()
     connection.close()
+
 
 def avg_time_PartNumber(path) -> None:
     total_time = 0
@@ -219,6 +224,7 @@ def avg_time_PartNumber(path) -> None:
         total_time += t_taken
     print("Avg time: {}".format(total_time/100))
 
+
 def avg_time_NeedPart(path) -> None:
     total_time = 0
     for i in range(0, 100):
@@ -227,6 +233,7 @@ def avg_time_NeedPart(path) -> None:
         t_taken = time.process_time() - t_start
         total_time += t_taken
     print("Avg time: {}".format(total_time/100))
+
 
 def run_PartNumber_trials(options):
     for option in options:
@@ -237,11 +244,16 @@ def run_PartNumber_trials(options):
 
 
 def run_NeedPart_trials(options):
+    global needs_part_list
+    global part_number_list
     for option in options:
         print("Avg time for {} entries".format(option))
         avg_time_NeedPart(options[option])
         print("Size of database {}".format(os.stat(options[option]).st_size))
-        print("\n")     
- 
+        print("\n")
+        needs_part_list = None
+        part_number_list = None
+
+
 if __name__ == "__main__":
     main()
