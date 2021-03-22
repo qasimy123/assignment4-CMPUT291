@@ -45,8 +45,8 @@ def connect(path) -> Connection:
 
 
 def main():
-    options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
-               "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
+    options = {"100": V100_DB_PATH, "1K": V1K_DB_PATH,
+            "10K": V10K_DB_PATH, "100K": V100K_DB_PATH, "1M": V1M_DB_PATH}
 
     update_index(options, DROP_INDEX_QUERY_IF_EXISTS)
 
@@ -90,7 +90,7 @@ def avg_time(path) -> None:
         run_query(path)
         t_taken = time.process_time() - t_start
         total_time += t_taken
-    print("Avg time: {}".format(total_time/100))
+    print("Avg time: {} ms".format(total_time*1000))
 
 
 def run_query(path) -> None:

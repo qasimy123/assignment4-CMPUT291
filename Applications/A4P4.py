@@ -62,8 +62,8 @@ country_list = None
 
 
 def main():
-    options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
-               "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
+    options = {"100": V100_DB_PATH, "1K": V1K_DB_PATH,
+        "10K": V10K_DB_PATH, "100K": V100K_DB_PATH, "1M": V1M_DB_PATH}
 
     print("Avg times and sizes for Query 5 without index\n")
     run_trials(options, QUERY_5)
@@ -135,7 +135,7 @@ def avg_time(path, query) -> None:
         run_query(path, query)
         t_taken = time.process_time() - t_start
         total_time += t_taken
-    print("Avg time: {}".format(total_time/100))
+    print("Avg time: {} ms".format(total_time*1000))
 
 
 if __name__ == "__main__":

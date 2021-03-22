@@ -1,12 +1,17 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
+
+#for Windows this is the command that works to run env
+#/venv/Scripts/activate
 
 import time
+import csv
 import os
 import random
 import sqlite3
 from sqlite3 import Connection
 from typing import List
 
+COUNTRY_DATA = "../Data/data_csv.csv"
 V100_DB_PATH = "../SQLiteDBs/A4v100.db"
 V1K_DB_PATH = "../SQLiteDBs/A4v1k.db"
 V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
@@ -44,8 +49,8 @@ country_list = None
 
 
 def main():
-    options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
-               "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
+    options = {"100": V100_DB_PATH, "1K": V1K_DB_PATH,
+            "10K": V10K_DB_PATH, "100K": V100K_DB_PATH, "1M": V1M_DB_PATH}
 
     print("Avg times and sizes for Query 4 without index\n")
     run_trials(options)
@@ -74,13 +79,11 @@ def update_index(options, query):
 
 
 def run_trials(options):
-    global country_list
     for option in options:
         print("Avg time for {} entries".format(option))
         avg_time(options[option])
         print("Size of database {}".format(os.stat(options[option]).st_size))
         print("\n")
-        country_list = None
 
 
 def connect(path) -> Connection:
@@ -104,39 +107,34 @@ def exact_path(path) -> str:
 def run_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
-    country_code = get_random_country_code(path)
+    country_code = get_random_country_code()
     cursor.execute(QUERY_4, {
         "countrycode": country_code})
     connection.commit()
     connection.close()
 
 
-def load_country_code_data(path) -> List[str]:
+def load_country_code_data() -> List[str]:
     global country_list
     if(country_list is None):
-        connection = connect(path)
-        cursor = connection.cursor()
-
-        cursor.execute(
-            '''
-            select
-                madeIn
-            from
-                Parts;
-            '''
-        )
-        rows = (cursor.fetchall())
-        country_list = [', '.join(map(str, x)) for x in rows]
-        connection.commit()
-        connection.close()
-
+        data_path = exact_path(COUNTRY_DATA)
+        data = []
+        added = set()
+        with open(data_path) as csvfile:
+            datareader = csv.reader(csvfile)
+            for row in datareader:
+                if(row[0] not in added):
+                    data.append(row)
+                    added.add(row[0])
+            csvfile.close()
+        country_list = data[1:]
     return country_list
 
 
-def get_random_country_code(path) -> str:
-    country_code_list = load_country_code_data(path)
+def get_random_country_code() -> str:
+    country_code_list = load_country_code_data()
     rand_country_i = random.randint(0, len(country_code_list)-1)
-    country_code = country_code_list[rand_country_i]
+    country_code = country_code_list[rand_country_i][1]
     return country_code
 
 
@@ -147,7 +145,8 @@ def avg_time(path) -> None:
         run_query(path)
         t_taken = time.process_time() - t_start
         total_time += t_taken
-    print("Avg time: {}".format(total_time/100))
+    print("Avg time: {} ms".format(total_time*1000))
+
 
 
 if __name__ == "__main__":
