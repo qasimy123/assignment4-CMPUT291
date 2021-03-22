@@ -113,7 +113,7 @@ def get_PartNumber():
             select
                 partNumber
             from
-                Parts
+                Parts;
             '''
         )
         rows = (cursor.fetchall())
@@ -138,7 +138,7 @@ def get_NeedsPart():
             select
                 needsPart
             from
-                Parts
+                Parts;
             '''
         )
         rows = (cursor.fetchall())
@@ -153,6 +153,7 @@ def get_price_of_PartNumber(part_num):
 
     connection = connect(MAIN_DB_PATH)
     cursor = connection.cursor()
+    #Finding price of part given its part number
     cursor.execute(
         '''
         select
@@ -160,7 +161,7 @@ def get_price_of_PartNumber(part_num):
         from
             Parts
         where
-            partNumber = :num
+            partNumber = :num;
         ''',{
             "num":part_num
         }
@@ -173,6 +174,7 @@ def get_price_of_NeedsPart(needs_part_num):
 
     connection = connect(MAIN_DB_PATH)
     cursor = connection.cursor()
+    #Finding price of part given the part required
     cursor.execute(
         '''
         select
@@ -180,7 +182,7 @@ def get_price_of_NeedsPart(needs_part_num):
         from
             Parts
         where
-            needsPart = :num
+            needsPart = :num;
         ''',{
             "num":needs_part_num
         }
