@@ -11,7 +11,7 @@ V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 MAIN_DB_PATH = "../SQLiteDBs/main.db"
 
 
-QUERY_4 = '''
+QUERY_3 = '''
         select
             avg(partPrice)
         from
@@ -94,7 +94,7 @@ def avg_time(path) -> None:
 def run_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
-    cursor.execute(QUERY_4)
+    cursor.execute(QUERY_3)
     connection.commit()
     connection.close()
 
