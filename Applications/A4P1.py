@@ -1,12 +1,10 @@
 import time
-import csv
 import os
 import random
 import sqlite3
 from sqlite3 import Connection
 from typing import List
 
-COUNTRY_DATA = "../Data/data_csv.csv"
 V100_DB_PATH = "../SQLiteDBs/A4v100.db"
 V1K_DB_PATH = "../SQLiteDBs/A4v1k.db"
 V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
@@ -21,7 +19,7 @@ QUERY_1 = '''
         from
             Parts
         where
-            partNumber = :num
+            partNumber = :num;
     '''
 
 QUERY_2 = '''
@@ -30,7 +28,7 @@ QUERY_2 = '''
         from
             Parts
         where 
-            needsPart = :num
+            needsPart = :num;
     '''
 
 CREATE_INDEX_QUERY = '''
@@ -43,7 +41,13 @@ DROP_INDEX_QUERY = '''
 
 DROP_INDEX_QUERY_IF_EXISTS = '''
          DROP INDEX IF EXISTS idxNeedsPart;
-    '''        
+    '''
+
+#setting globals to use list in memory
+part_number_list = None
+needs_part_list = None
+
+
 Connection = sqlite3.Connection
 
 def connect(path) -> Connection:
@@ -58,17 +62,10 @@ def connect(path) -> Connection:
 
 def main():
     print("Implement P1 here")
-    
-    # part_number = get_PartNumber()
-    # needs_part = get_NeedsPart()
-    
-    # part_number_price = get_price_of_PartNumber(part_number)
-    # needs_part_price = get_price_of_NeedsPart(needs_part)
 
     options = {"100": V100_DB_PATH, "1000": V1K_DB_PATH,
                "10000": V10K_DB_PATH, "100000": V100K_DB_PATH, "1000000": V1M_DB_PATH}
 
-    
     #Drop index if it exists
     update_index(options, DROP_INDEX_QUERY_IF_EXISTS)
 
@@ -105,53 +102,55 @@ def update_index(options, query):
 
 def get_PartNumber():
 
-    connection = connect(MAIN_DB_PATH)
-    cursor = connection.cursor()
+    global part_number_list
 
-    cursor.execute(
-        '''
-        select
-            partNumber
-        from
-            Parts
-        '''
-    )
-    rows = (cursor.fetchall())
-    rows = [', '.join(map(str, x)) for x in rows]
-    
-    x = random.choice(rows)
+    if part_number_list is None:
+        connection = connect(MAIN_DB_PATH)
+        cursor = connection.cursor()
 
-    connection.commit()
-    connection.close()
-    
-#print(x)
-    return x
+        cursor.execute(
+            '''
+            select
+                partNumber
+            from
+                Parts
+            '''
+        )
+        rows = (cursor.fetchall())
+        part_number_list = [', '.join(map(str, x)) for x in rows]
+
+        connection.commit()
+        connection.close()
+        
+    part_number = random.choice(part_number_list)
+    return part_number
+
 def get_NeedsPart():
 
-    connection = connect(MAIN_DB_PATH)
+    global needs_part_list
 
-    cursor = connection.cursor()
-    cursor.execute(
-        '''
-        select
-            needsPart
-        from
-            Parts
-        '''
-    )
-    rows = (cursor.fetchall())
-    rows = [', '.join(map(str, x)) for x in rows]
-    
-    x = random.choice(rows)
+    if needs_part_list is None:
+        connection = connect(MAIN_DB_PATH)
 
-    connection.commit()
-    connection.close()
-    
-    #print(x)
-    
-    return x
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+            select
+                needsPart
+            from
+                Parts
+            '''
+        )
+        rows = (cursor.fetchall())
+        needs_part_list = [', '.join(map(str, x)) for x in rows]
+        connection.commit()
+        connection.close()
+
+    needs_part_number = random.choice(needs_part_list)
+    return needs_part_number
 
 def get_price_of_PartNumber(part_num):
+
     connection = connect(MAIN_DB_PATH)
     cursor = connection.cursor()
     cursor.execute(
@@ -166,14 +165,9 @@ def get_price_of_PartNumber(part_num):
             "num":part_num
         }
     )
-    #price = cursor.fetchone()
-    rows = cursor.fetchall()
-    rows = [', '.join(map(str, x)) for x in rows]
-  
     connection.commit()
     connection.close()
-    
-    return rows[0]
+
 
 def get_price_of_NeedsPart(needs_part_num):
 
@@ -191,14 +185,9 @@ def get_price_of_NeedsPart(needs_part_num):
             "num":needs_part_num
         }
     )
-    rows = cursor.fetchall()
-    rows = [', '.join(map(str, x)) for x in rows]
-  
     connection.commit()
     connection.close()
     
-    return rows[0]
-
 def run_PartNumber_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
