@@ -4,14 +4,12 @@
 #/venv/Scripts/activate
 
 import time
-import csv
 import os
 import random
 import sqlite3
 from sqlite3 import Connection
 from typing import List
 
-COUNTRY_DATA = "../Data/data_csv.csv"
 V100_DB_PATH = "../SQLiteDBs/A4v100.db"
 V1K_DB_PATH = "../SQLiteDBs/A4v1k.db"
 V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
