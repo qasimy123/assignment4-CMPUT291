@@ -127,7 +127,6 @@ def load_country_code_data(path) -> List[str]:
         )
         rows = (cursor.fetchall())
         country_list = [', '.join(map(str, x)) for x in rows]
-        print("s", country_list)
         connection.commit()
         connection.close()
 
