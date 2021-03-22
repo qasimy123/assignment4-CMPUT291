@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 import time
-import csv
 import os
 import random
 import sqlite3
 from sqlite3 import Connection
 from typing import List
 
-COUNTRY_DATA = "../Data/data_csv.csv"
 V100_DB_PATH = "../SQLiteDBs/A4v100.db"
 V1K_DB_PATH = "../SQLiteDBs/A4v1k.db"
 V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
@@ -76,11 +74,13 @@ def update_index(options, query):
 
 
 def run_trials(options):
+    global country_list
     for option in options:
         print("Avg time for {} entries".format(option))
         avg_time(options[option])
         print("Size of database {}".format(os.stat(options[option]).st_size))
         print("\n")
+        country_list = None
 
 
 def connect(path) -> Connection:
@@ -104,34 +104,40 @@ def exact_path(path) -> str:
 def run_query(path) -> None:
     connection = connect(path)
     cursor = connection.cursor()
-    country_code = get_random_country_code()
+    country_code = get_random_country_code(path)
     cursor.execute(QUERY_4, {
         "countrycode": country_code})
     connection.commit()
     connection.close()
 
 
-def load_country_code_data() -> List[str]:
+def load_country_code_data(path) -> List[str]:
     global country_list
     if(country_list is None):
-        data_path = exact_path(COUNTRY_DATA)
-        data = []
-        added = set()
-        with open(data_path) as csvfile:
-            datareader = csv.reader(csvfile)
-            for row in datareader:
-                if(row[0] not in added):
-                    data.append(row)
-                    added.add(row[0])
-            csvfile.close()
-        country_list = data[1:]
+        connection = connect(path)
+        cursor = connection.cursor()
+
+        cursor.execute(
+            '''
+            select
+                madeIn
+            from
+                Parts;
+            '''
+        )
+        rows = (cursor.fetchall())
+        country_list = [', '.join(map(str, x)) for x in rows]
+        print("s", country_list)
+        connection.commit()
+        connection.close()
+
     return country_list
 
 
-def get_random_country_code() -> str:
-    country_code_list = load_country_code_data()
+def get_random_country_code(path) -> str:
+    country_code_list = load_country_code_data(path)
     rand_country_i = random.randint(0, len(country_code_list)-1)
-    country_code = country_code_list[rand_country_i][1]
+    country_code = country_code_list[rand_country_i]
     return country_code
 
 
