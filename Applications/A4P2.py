@@ -50,13 +50,13 @@ def main():
 
     update_index(options, DROP_INDEX_QUERY_IF_EXISTS)
 
-    print("Avg times and sizes for Query 1 without index\n")
+    print("Avg times and sizes for Query 3 without index\n")
     run_trials(options)
 
     print("Creating index for each database\n")
     update_index(options, CREATE_INDEX_QUERY)
 
-    print("Avg times and sizes for Query 1 with index\n")
+    print("Avg times and sizes for Query 3 with index\n")
     run_trials(options)
 
     print("Dropping index for each database\n")
