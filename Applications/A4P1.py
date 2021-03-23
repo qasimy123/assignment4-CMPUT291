@@ -222,6 +222,9 @@ def avg_time_PartNumber(path) -> None:
         run_PartNumber_query(path)
         t_taken = time.process_time() - t_start
         total_time += t_taken
+    # to get the average for total_time
+    total_time = total_time/100
+    # display in ms
     print("Avg time: {} ms".format(total_time*1000))
 
 
@@ -232,6 +235,9 @@ def avg_time_NeedPart(path) -> None:
         run_NeedPart_query(path)
         t_taken = time.process_time() - t_start
         total_time += t_taken
+    # to get the average for total_time
+    total_time = total_time/100
+    # display in ms
     print("Avg time: {} ms".format(total_time*1000))
 
 

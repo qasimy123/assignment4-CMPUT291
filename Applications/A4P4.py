@@ -137,6 +137,9 @@ def avg_time(path, query) -> None:
         run_query(path, query)
         t_taken = time.process_time() - t_start
         total_time += t_taken
+    # to get the average for total_time
+    total_time = total_time/100
+    # display in ms
     print("Avg time: {} ms".format(total_time*1000))
 
 
