@@ -47,6 +47,7 @@ def connect(path) -> Connection:
 def main():
     options = {"100": V100_DB_PATH, "1K": V1K_DB_PATH,
             "10K": V10K_DB_PATH, "100K": V100K_DB_PATH, "1M": V1M_DB_PATH}
+    print("Executing Part 2\n")
 
     update_index(options, DROP_INDEX_QUERY_IF_EXISTS)
 
