@@ -14,29 +14,51 @@ V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
 # Q5: Find the quantity of parts that are not used in any other part, your query must use EXISTS.
+
+# select
+#     count(partNumber)
+# from
+#     Parts p
+# where
+#     not exists (
+#         select
+#             1
+#         from
+#             Parts p2
+#         where
+#             p.partNumber = p2.needsPart
+#     );
+
 QUERY_5 = '''
     select
         count(partNumber)
     from
         Parts p
     where
-        exists (
+        not exists (
             select
                 1
             from
                 Parts p2
             where
-                p.partNumber = p2.partNumber
-                and p2.partNumber not in (
-                    select
-                        needsPart
-                    from
-                        Parts p2
-                )
-    );
+                p.partNumber = p2.needsPart
+        );
     '''
 
 # Q6: Find the quantity of parts that are not used in any other part, your query must use NOT IN.
+
+# select
+#     count(partNumber)
+# from
+#     Parts p
+# where
+#     p.partNumber not in (
+#         select
+#             needsPart
+#         from
+#             Parts p2
+#     );
+        
 QUERY_6 = '''
     select
         count(partNumber)
@@ -50,10 +72,18 @@ QUERY_6 = '''
                 Parts p2
         );
     '''
-# Creates a covering index that sqlite will use to efficiently find  partNumber and needsPart
+
+# Creates an index for Q6
+
+# CREATE INDEX idxPartNumberNeedsPart on Parts ( needsPart, partNumber );
+
 CREATE_INDEX_QUERY = '''
     CREATE INDEX idxPartNumberNeedsPart on Parts ( needsPart, partNumber );
 '''
+
+# Drops the index for Q6
+
+# DROP INDEX idxPartNumberNeedsPart;
 
 DROP_INDEX_QUERY = '''
     DROP INDEX idxPartNumberNeedsPart;
@@ -63,8 +93,8 @@ country_list = None
 
 def main():
     options = {"100": V100_DB_PATH, "1K": V1K_DB_PATH,
-        "10K": V10K_DB_PATH, "100K": V100K_DB_PATH, "1M": V1M_DB_PATH}
-    
+               "10K": V10K_DB_PATH, "100K": V100K_DB_PATH, "1M": V1M_DB_PATH}
+
     print("Executing Part 4\n")
 
     print("Avg times and sizes for Query 5 without index\n")
@@ -132,6 +162,9 @@ def run_query(path, query) -> None:
 
 def avg_time(path, query) -> None:
     total_time = 0
+    if path in {V100K_DB_PATH, V1M_DB_PATH} and query is QUERY_5:
+        print("Skipping this Database")
+        return
     for i in range(0, 100):
         t_start = time.process_time()
         run_query(path, query)
