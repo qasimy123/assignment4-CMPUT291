@@ -14,6 +14,21 @@ V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
 # Q5: Find the quantity of parts that are not used in any other part, your query must use EXISTS.
+
+# select
+#     count(partNumber)
+# from
+#     Parts p
+# where
+#     not exists (
+#         select
+#             1
+#         from
+#             Parts p2
+#         where
+#             p.partNumber = p2.needsPart
+#     );
+
 QUERY_5 = '''
     select
         count(partNumber)
@@ -31,6 +46,19 @@ QUERY_5 = '''
     '''
 
 # Q6: Find the quantity of parts that are not used in any other part, your query must use NOT IN.
+
+# select
+#     count(partNumber)
+# from
+#     Parts p
+# where
+#     p.partNumber not in (
+#         select
+#             needsPart
+#         from
+#             Parts p2
+#     );
+        
 QUERY_6 = '''
     select
         count(partNumber)
@@ -44,10 +72,18 @@ QUERY_6 = '''
                 Parts p2
         );
     '''
-# Creates a covering index that sqlite will use to efficiently find  partNumber and needsPart
+
+# Creates an index for Q6
+
+# CREATE INDEX idxPartNumberNeedsPart on Parts ( needsPart, partNumber );
+
 CREATE_INDEX_QUERY = '''
     CREATE INDEX idxPartNumberNeedsPart on Parts ( needsPart, partNumber );
 '''
+
+# Drops the index for Q6
+
+# DROP INDEX idxPartNumberNeedsPart;
 
 DROP_INDEX_QUERY = '''
     DROP INDEX idxPartNumberNeedsPart;
