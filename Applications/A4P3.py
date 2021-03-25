@@ -12,7 +12,24 @@ V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
 
-# Using uncorrelated sub query to find the max price and outer query to select 1 part number
+# Q4: Find the most expensive part made in a randomly selected country (code) that exist in Parts. 
+
+# select
+#     p1.partNumber
+# from
+#     Parts p1
+# where
+#     p1.madeIn = :countrycode
+#     and p1.partPrice = (
+#         select
+#             max(partPrice)
+#         from
+#             Parts p2
+#         where
+#             p2.madeIn = :countrycode
+#     )
+# limit   1;
+
 QUERY_4 = '''
         select
             p1.partNumber
@@ -30,10 +47,19 @@ QUERY_4 = '''
             )
         limit   1;
     '''
-# Creates a covering index that sqlite will use to efficiently find madeIn and their part price
+
+# Creates an index for Q4
+
+# CREATE INDEX idxPartPriceMadeIn ON Parts ( madeIn, partPrice );
+
+
 CREATE_INDEX_QUERY = '''
     CREATE INDEX idxPartPriceMadeIn ON Parts ( madeIn, partPrice );
 '''
+
+# Drops the index for Q4
+
+# DROP INDEX idxPartPriceMadeIn;
 
 DROP_INDEX_QUERY = '''
     DROP INDEX idxPartPriceMadeIn;
