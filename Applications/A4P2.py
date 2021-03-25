@@ -9,6 +9,15 @@ V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
 V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
+# Q3: Considering the set of countries that exist in relation Parts, find the average price of the parts made in each country 
+
+    # select
+    #     avg(partPrice)
+    # from
+    #     Parts
+    # group by
+    #     madeIn;
+
 QUERY_3 = '''
         select
             avg(partPrice)
@@ -18,13 +27,20 @@ QUERY_3 = '''
             madeIn;
     '''
 
+# creating an index on Parts for MadeIn
+# CREATE INDEX idxMadeIn ON Parts ( MadeIn );
+
 CREATE_INDEX_QUERY = '''
         CREATE INDEX idxMadeIn ON Parts (MadeIn);
     '''
+# drop the index 
+# DROP INDEX idxMadeIn;
 
 DROP_INDEX_QUERY = '''
         DROP INDEX idxMadeIn;
     '''
+# drop the index query if it exists
+# DROP INDEX IF EXISTS idxMadeIn;
 
 DROP_INDEX_QUERY_IF_EXISTS = '''
          DROP INDEX IF EXISTS idxMadeIn;
