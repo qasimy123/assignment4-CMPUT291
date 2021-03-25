@@ -11,6 +11,17 @@ V10K_DB_PATH = "../SQLiteDBs/A4v10k.db"
 V100K_DB_PATH = "../SQLiteDBs/A4v100k.db"
 V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
+# Q1: Given a randomly selected UPC code U from the UPC database that exist in 
+# Parts find the price of part in Parts that has partNumber = U
+
+# num = partNumber in this query:
+
+# select
+#     partPrice
+# from
+#     Parts
+# where
+#     partNumber = :num;
 
 QUERY_1 = '''
         select
@@ -20,6 +31,17 @@ QUERY_1 = '''
         where
             partNumber = :num;
     '''
+# Q2: Given a randomly selected UPC code U from the UPC database 
+# that exist in Parts find the price of part in Parts that has needsPart = U
+
+# num = needsPart in this query:
+
+# select
+#     partPrice
+# from
+#     Parts
+# where 
+#     needsPart = :num;
 
 QUERY_2 = '''
         select
@@ -29,14 +51,22 @@ QUERY_2 = '''
         where 
             needsPart = :num;
     '''
+    
+# creating an index on Parts for needsPart
+# CREATE INDEX idxNeedsPart ON Parts ( needsPart );
 
 CREATE_INDEX_QUERY = '''
         CREATE INDEX idxNeedsPart ON Parts ( needsPart );
     '''
+# drop the index
+# DROP INDEX idxNeedsPart;
 
 DROP_INDEX_QUERY = '''
         DROP INDEX idxNeedsPart;
     '''
+
+# drop the index if it exists
+# DROP INDEX IF EXISTS idxNeedsPart;
 
 DROP_INDEX_QUERY_IF_EXISTS = '''
          DROP INDEX IF EXISTS idxNeedsPart;
@@ -46,7 +76,7 @@ DROP_INDEX_QUERY_IF_EXISTS = '''
 part_number_list = None
 needs_part_list = None
 
-
+# setting a connection to sqlite3
 Connection = sqlite3.Connection
 
 
@@ -102,6 +132,14 @@ def update_index(options, query):
 
 def get_PartNumber(path):
 
+
+    # returns a random NeedPart number from the db:
+
+        # select
+        #     needsPart
+        # from
+        #     Parts;
+
     global part_number_list
 
     if part_number_list is None:
@@ -127,6 +165,13 @@ def get_PartNumber(path):
 
 
 def get_NeedsPart(path):
+
+    # returns a random NeedPart number from the db:
+
+            # select
+            #     needsPart
+            # from
+            #     Parts;
 
     global needs_part_list
 
@@ -155,18 +200,9 @@ def get_price_of_PartNumber(part_num, path):
 
     connection = connect(path)
     cursor = connection.cursor()
-    # Finding price of part given its part number
-    cursor.execute(
-        '''
-        select
-            partPrice
-        from
-            Parts
-        where
-            partNumber = :num;
-        ''', {
-            "num": part_num
-        }
+
+    cursor.execute(QUERY_1,{
+            "num": part_num}
     )
     connection.commit()
     connection.close()
@@ -176,18 +212,9 @@ def get_price_of_NeedsPart(needs_part_num, path):
 
     connection = connect(path)
     cursor = connection.cursor()
-    # Finding price of part given the part required
-    cursor.execute(
-        '''
-        select
-            partPrice
-        from
-            Parts
-        where
-            needsPart = :num;
-        ''', {
-            "num": needs_part_num
-        }
+    
+    cursor.execute(QUERY_2,{
+            "num": needs_part_num}
     )
     connection.commit()
     connection.close()
