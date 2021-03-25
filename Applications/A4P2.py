@@ -11,12 +11,12 @@ V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
 # Q3: Considering the set of countries that exist in relation Parts, find the average price of the parts made in each country 
 
-    # select
-    #     avg(partPrice)
-    # from
-    #     Parts
-    # group by
-    #     madeIn;
+# select
+#     avg(partPrice)
+# from
+#     Parts
+# group by
+#     madeIn;
 
 QUERY_3 = '''
         select

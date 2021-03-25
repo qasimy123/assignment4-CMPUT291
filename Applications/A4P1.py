@@ -16,15 +16,12 @@ V1M_DB_PATH = "../SQLiteDBs/A4v1M.db"
 
 # num = partNumber in this query:
 
-    # select
-    #     partPrice
-    # from
-    #     Parts
-    # where
-    #     partNumber = :num;
-    # , {
-    #     "num": part_num
-    # }
+# select
+#     partPrice
+# from
+#     Parts
+# where
+#     partNumber = :num;
 
 QUERY_1 = '''
         select
@@ -39,15 +36,12 @@ QUERY_1 = '''
 
 # num = needsPart in this query:
 
-    # select
-    #     partPrice
-    # from
-    #     Parts
-    # where 
-    #     needsPart = :num;
-    # , {
-    #     "num": part_num
-    # }
+# select
+#     partPrice
+# from
+#     Parts
+# where 
+#     needsPart = :num;
 
 QUERY_2 = '''
         select
@@ -57,6 +51,7 @@ QUERY_2 = '''
         where 
             needsPart = :num;
     '''
+    
 # creating an index on Parts for needsPart
 # CREATE INDEX idxNeedsPart ON Parts ( needsPart );
 
